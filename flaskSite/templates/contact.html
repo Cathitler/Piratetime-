@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Contact - Pirate Time</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #111118;
+            --bg-tertiary: #1a1a25;
+            --bg-card: #16161f;
+            --border-subtle: rgba(255,255,255,0.06);
+            --border-medium: rgba(255,255,255,0.1);
+            --text-primary: #f0f0f5;
+            --text-secondary: #b0b0c0;
+            --text-muted: #6a6a7a;
+            --accent: #e8456b;
+            --accent-hover: #f06080;
+            --accent-glow: rgba(232,69,107,0.35);
+            --radius-sm: 8px;
+            --radius-md: 14px;
+            --radius-lg: 20px;
+            --shadow-lg: 0 20px 60px rgba(0,0,0,0.6);
+            --font-family: 'Inter', -apple-system, sans-serif;
+            --nav-height: 64px;
+        }
+        body {
+            font-family: var(--font-family);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 3px; }
+
+        .nav {
+            position: sticky; top: 0; z-index: 100;
+            background: rgba(10,10,15,0.78);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-subtle);
+            height: var(--nav-height);
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            gap: 12px;
+        }
+        .nav__logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            text-decoration: none;
+            flex-shrink: 0;
+        }
+        .nav__logo-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: var(--radius-sm);
+            background: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: none;
+            overflow: hidden;
+        }
+        .nav__logo-icon img {
+            width: 34px;
+            height: 34px;
+            object-fit: contain;
+            display: block;
+        }
+        .nav__logo-icon .logo-fallback {
+            font-size: 24px;
+            line-height: 1;
+        }
+        .nav__links {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            list-style: none;
+            flex: 1;
+            justify-content: center;
+        }
+        .nav__link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-weight: 500;
+            font-size: 0.85rem;
+            transition: all 0.15s;
+        }
+        .nav__link:hover,
+        .nav__link.active {
+            color: var(--text-primary);
+            background: rgba(255,255,255,0.06);
+        }
+        .nav__link.active { background: rgba(255,255,255,0.1); font-weight: 600; }
+
+        .nav__actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+            margin-left: auto;
+        }
+        .nav__free-text {
+            color: var(--text-muted);
+            font-size: 0.7rem;
+            font-weight: 500;
+            white-space: nowrap;
+            letter-spacing: 0.02em;
+            padding-right: 4px;
+        }
+        .nav__hamburger {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.4rem;
+            cursor: pointer;
+            width: 36px;
+            height: 36px;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-sm);
+            flex-shrink: 0;
+            margin-left: 4px;
+        }
+        .nav__hamburger:hover { background: rgba(255,255,255,0.08); }
+
+        /* ===== MOBILE SIDEBAR ===== */
+        .mobile-sidebar {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 280px;
+            height: 100vh;
+            z-index: 200;
+            background: rgba(10,10,15,0.85);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            transform: translateX(100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 60px 24px 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            border-left: 1px solid rgba(255,255,255,0.06);
+            box-shadow: -10px 0 40px rgba(0,0,0,0.5);
+            touch-action: pan-y;
+        }
+        .mobile-sidebar.open {
+            transform: translateX(0);
+        }
+        .mobile-sidebar__drag-handle {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: grab;
+            touch-action: none;
+        }
+        .mobile-sidebar__drag-handle:active { cursor: grabbing; }
+        .mobile-sidebar__drag-line {
+            width: 40px;
+            height: 4px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 2px;
+            margin-top: 10px;
+        }
+        .mobile-sidebar__close {
+            position: absolute;
+            top: 12px;
+            right: 16px;
+            background: rgba(255,255,255,0.06);
+            border: none;
+            color: var(--text-secondary);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s;
+        }
+        .mobile-sidebar__close:hover { background: rgba(255,255,255,0.12); }
+        .mobile-sidebar__link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 500;
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            transition: all 0.15s;
+        }
+        .mobile-sidebar__link:hover,
+        .mobile-sidebar__link.active {
+            color: var(--text-primary);
+            background: rgba(255,255,255,0.06);
+        }
+        .mobile-sidebar__link.active {
+            color: var(--accent);
+            background: rgba(232,69,107,0.1);
+        }
+        .mobile-sidebar__divider {
+            height: 1px;
+            background: rgba(255,255,255,0.06);
+            margin: 8px 0;
+        }
+        .mobile-sidebar__free {
+            margin-top: auto;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255,255,255,0.06);
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            text-align: center;
+            letter-spacing: 0.03em;
+        }
+
+        /* Overlay for sidebar */
+        .sidebar-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 150;
+            background: rgba(0,0,0,0.3);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        .sidebar-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .main {
+            padding: 40px 24px 60px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            margin-bottom: 24px;
+            color: #fff;
+        }
+        .content p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 16px;
+        }
+        .content a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .content a:hover { text-decoration: underline; }
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-muted);
+            text-decoration: none;
+            margin-top: 30px;
+            transition: color 0.2s;
+            font-size: 0.95rem;
+        }
+        .back-link:hover { color: var(--accent); }
+
+        @media (max-width: 768px) {
+            .nav { padding: 0 12px; gap: 6px; }
+            .nav__logo { font-size: 1rem; gap: 5px; }
+            .nav__logo-icon { width: 28px; height: 28px; }
+            .nav__logo-icon img { width: 28px; height: 28px; object-fit: contain; }
+            .nav__links { display: none; }
+            .nav__hamburger { display: flex; }
+            .main { padding: 30px 16px 40px; }
+            .page-title { font-size: 2rem; }
+            .content p { font-size: 1rem; }
+            .mobile-sidebar { width: 260px; }
+        }
+
+        @media (max-width: 480px) {
+            .page-title { font-size: 1.6rem; }
+            .content p { font-size: 0.9rem; }
+            .back-link { font-size: 0.85rem; }
+            .mobile-sidebar { width: 240px; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="nav" id="navbar">
+        <a href="/" class="nav__logo">
+            <span class="nav__logo-icon" id="logoLetter">
+                <img src="/sitelogo.jpg" alt="Pirate Time logo" id="navLogoImg" style="width:34px;height:34px;object-fit:contain;" onerror="this.style.display='none';this.parentElement.innerHTML='<span class=\\'logo-fallback\\' style=\\'font-size:24px;line-height:1;\\'>🍿</span>'">
+            </span>
+            <span id="siteName">Pirate Time</span>
+        </a>
+        
+        <ul class="nav__links">
+            <li><a href="/" class="nav__link">Home</a></li>
+            <li><a href="/movies" class="nav__link">Movies</a></li>
+            <li><a href="/tvshows" class="nav__link">TV Shows</a></li>
+            <li><a href="/about" class="nav__link">About</a></li>
+            <li><a href="/contact" class="nav__link active">Contact</a></li>
+        </ul>
+        
+        <div class="nav__actions">
+            <span class="nav__free-text" id="freeText">Free forever ♾</span>
+            <button class="nav__hamburger" id="hamburgerBtn" aria-label="Menu">☰</button>
+        </div>
+    </nav>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Mobile Sidebar -->
+    <div class="mobile-sidebar" id="mobileSidebar">
+        <div class="mobile-sidebar__drag-handle" id="dragHandle">
+            <div class="mobile-sidebar__drag-line"></div>
+        </div>
+        <button class="mobile-sidebar__close" id="sidebarClose">✕</button>
+        <a href="/" class="mobile-sidebar__link" data-mobile-nav="home">Home</a>
+        <a href="/movies" class="mobile-sidebar__link" data-mobile-nav="movies">Movies</a>
+        <a href="/tvshows" class="mobile-sidebar__link" data-mobile-nav="tvshows">TV Shows</a>
+        <div class="mobile-sidebar__divider"></div>
+        <a href="/about" class="mobile-sidebar__link" data-mobile-nav="about">About</a>
+        <a href="/contact" class="mobile-sidebar__link active" data-mobile-nav="contact">Contact</a>
+        <div class="mobile-sidebar__free">Free forever ♾</div>
+    </div>
+
+    <main class="main">
+        <h1 class="page-title" id="contactTitle">📧 Contact</h1>
+        <div class="content" id="contactContent"></div>
+        <a href="/" class="back-link">← Back to home</a>
+    </main>
+
+    <script>
+        (function() {
+            const $ = (sel) => document.querySelector(sel);
+            const $$ = (sel) => document.querySelectorAll(sel);
+
+            let sidebarOpen = false;
+            let startX = 0;
+            let currentX = 0;
+            let isDragging = false;
+
+            // ===== LOAD CONFIG =====
+            fetch('/api/config')
+                .then(res => res.json())
+                .then(config => {
+                    const contact = config.contactPage || {};
+                    const site = config || {};
+                    
+                    if (site.name) {
+                        $('#siteName').textContent = site.name;
+                        document.title = `${site.name} - Contact`;
+                    }
+
+                    if (contact.title) {
+                        $('#contactTitle').textContent = contact.title;
+                    }
+                    
+                    const text1 = contact.text1 || 'We\'d love to hear from you! Reach out via email at';
+                    const email = contact.email || 'hello@piratetime.local';
+                    const text2 = contact.text2 || 'For technical support or suggestions, please contact us on';
+                    const helpText = contact.helpLinkText || 'Help Center';
+                    const helpUrl = contact.helpLinkUrl || '#';
+                    const githubLink = contact.githubLink || '#';
+                    const socialLabel = contact.socialLabel || 'GitHub';
+
+                    $('#contactContent').innerHTML = `
+                        <p>${text1} <strong>${email}</strong>.</p>
+                        <p>${text2} <a href="${helpUrl}" target="_blank">${helpText}</a>.</p>
+                        <p>Find us on <a href="${githubLink}" target="_blank" rel="noopener">${socialLabel}</a>.</p>
+                    `;
+                })
+                .catch(err => {
+                    console.warn('Config not loaded:', err);
+                    $('#siteName').textContent = 'Pirate Time';
+                    $('#contactContent').innerHTML = '<p>Contact information not available.</p>';
+                });
+
+            // ===== MOBILE SIDEBAR =====
+            const hamburgerBtn = $('#hamburgerBtn');
+            const mobileSidebar = $('#mobileSidebar');
+            const sidebarOverlay = $('#sidebarOverlay');
+            const sidebarClose = $('#sidebarClose');
+            const dragHandle = $('#dragHandle');
+
+            function openSidebar() {
+                sidebarOpen = true;
+                mobileSidebar.classList.add('open');
+                sidebarOverlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeSidebar() {
+                sidebarOpen = false;
+                mobileSidebar.classList.remove('open');
+                sidebarOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+
+            hamburgerBtn.addEventListener('click', openSidebar);
+            sidebarClose.addEventListener('click', closeSidebar);
+            sidebarOverlay.addEventListener('click', closeSidebar);
+
+            dragHandle.addEventListener('touchstart', (e) => {
+                startX = e.touches[0].clientX;
+                isDragging = true;
+            }, { passive: true });
+
+            document.addEventListener('touchmove', (e) => {
+                if (!isDragging || !sidebarOpen) return;
+                currentX = e.touches[0].clientX;
+                const diff = startX - currentX;
+                if (diff > 0) {
+                    const translate = Math.max(0, diff);
+                    mobileSidebar.style.transform = `translateX(${translate}px)`;
+                }
+            }, { passive: true });
+
+            document.addEventListener('touchend', () => {
+                if (!isDragging) return;
+                isDragging = false;
+                const diff = startX - currentX;
+                if (diff > 80) {
+                    closeSidebar();
+                } else {
+                    mobileSidebar.style.transform = '';
+                }
+                startX = 0;
+                currentX = 0;
+            }, { passive: true });
+
+            document.querySelectorAll('.mobile-sidebar__link').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const page = link.getAttribute('data-mobile-nav');
+                    if (page === 'movies' || page === 'tvshows') {
+                        window.location.href = link.getAttribute('href');
+                        return;
+                    }
+                    closeSidebar();
+                    if (page === 'home') {
+                        window.location.href = '/';
+                    } else if (page === 'about') {
+                        window.location.href = '/about';
+                    } else if (page === 'contact') {
+                        window.location.href = '/contact';
+                    }
+                });
+            });
+        })();
+    </script>
+</body>
+</html>

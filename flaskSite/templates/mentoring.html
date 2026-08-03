@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mentoring Hub — Pirate Time</title>
+    <link rel="icon" href="sitelogo.jpg" type="image/jpg">
+    <link rel="apple-touch-icon" href="sitelogo.jpg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #111118;
+            --bg-tertiary: #1a1a25;
+            --bg-card: #16161f;
+            --border-subtle: rgba(255,255,255,0.06);
+            --border-medium: rgba(255,255,255,0.1);
+            --text-primary: #f0f0f5;
+            --text-secondary: #b0b0c0;
+            --text-muted: #6a6a7a;
+            --accent: #e8456b;
+            --accent-hover: #f06080;
+            --accent-glow: rgba(232,69,107,0.35);
+            --radius-sm: 8px;
+            --radius-md: 14px;
+            --radius-lg: 20px;
+            --shadow-lg: 0 20px 60px rgba(0,0,0,0.6);
+            --font-family: 'Inter', -apple-system, sans-serif;
+            --nav-height: 64px;
+        }
+        body {
+            font-family: var(--font-family);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 3px; }
+
+        .nav {
+            position: sticky; top: 0; z-index: 100;
+            background: rgba(10,10,15,0.78);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-subtle);
+            height: var(--nav-height);
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            gap: 12px;
+        }
+        .nav__logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            text-decoration: none;
+            flex-shrink: 0;
+        }
+        .nav__logo-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: var(--radius-sm);
+            background: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .nav__logo-icon img {
+            width: 34px;
+            height: 34px;
+            object-fit: contain;
+            display: block;
+        }
+        .nav__links {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            list-style: none;
+            flex: 1;
+            justify-content: center;
+        }
+        .nav__link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-weight: 500;
+            font-size: 0.85rem;
+            transition: all 0.15s;
+        }
+        .nav__link:hover,
+        .nav__link.active {
+            color: var(--text-primary);
+            background: rgba(255,255,255,0.06);
+        }
+        .nav__link.active { background: rgba(255,255,255,0.1); font-weight: 600; }
+
+        .nav__actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+            margin-left: auto;
+        }
+        .nav__free-text {
+            color: var(--text-muted);
+            font-size: 0.7rem;
+            font-weight: 500;
+            white-space: nowrap;
+            letter-spacing: 0.02em;
+            padding-right: 4px;
+        }
+        .nav__hamburger {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.4rem;
+            cursor: pointer;
+            width: 36px;
+            height: 36px;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-sm);
+            flex-shrink: 0;
+            margin-left: 4px;
+        }
+        .nav__hamburger:hover { background: rgba(255,255,255,0.08); }
+
+        .mobile-sidebar {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 280px;
+            height: 100vh;
+            z-index: 200;
+            background: rgba(10,10,15,0.85);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            transform: translateX(100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 60px 24px 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            border-left: 1px solid rgba(255,255,255,0.06);
+            box-shadow: -10px 0 40px rgba(0,0,0,0.5);
+            touch-action: pan-y;
+        }
+        .mobile-sidebar.open { transform: translateX(0); }
+        .mobile-sidebar__drag-handle {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: grab;
+            touch-action: none;
+        }
+        .mobile-sidebar__drag-handle:active { cursor: grabbing; }
+        .mobile-sidebar__drag-line {
+            width: 40px;
+            height: 4px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 2px;
+            margin-top: 10px;
+        }
+        .mobile-sidebar__close {
+            position: absolute;
+            top: 12px;
+            right: 16px;
+            background: rgba(255,255,255,0.06);
+            border: none;
+            color: var(--text-secondary);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s;
+        }
+        .mobile-sidebar__close:hover { background: rgba(255,255,255,0.12); }
+        .mobile-sidebar__link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 500;
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            transition: all 0.15s;
+        }
+        .mobile-sidebar__link:hover,
+        .mobile-sidebar__link.active {
+            color: var(--text-primary);
+            background: rgba(255,255,255,0.06);
+        }
+        .mobile-sidebar__link.active {
+            color: var(--accent);
+            background: rgba(232,69,107,0.1);
+        }
+        .mobile-sidebar__divider {
+            height: 1px;
+            background: rgba(255,255,255,0.06);
+            margin: 8px 0;
+        }
+        .mobile-sidebar__free {
+            margin-top: auto;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255,255,255,0.06);
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            text-align: center;
+            letter-spacing: 0.03em;
+        }
+        .sidebar-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 150;
+            background: rgba(0,0,0,0.3);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        .sidebar-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px 60px;
+        }
+
+        .mentoring-header {
+            text-align: center;
+            padding: 40px 20px 30px;
+        }
+        .mentoring-header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff 30%, #e8456b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+        .mentoring-header p {
+            color: var(--text-secondary);
+            font-size: 1.05rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin: 24px 0 40px;
+        }
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 24px 20px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        .stat-card:hover {
+            border-color: rgba(255,255,255,0.15);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+        .stat-card .number {
+            font-size: 2.4rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            line-height: 1.1;
+        }
+        .stat-card .number.accent { color: var(--accent); }
+        .stat-card .number.gold { color: #f1c40f; }
+        .stat-card .number.green { color: #2ecc71; }
+        .stat-card .label {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-top: 4px;
+        }
+        .stat-card .sub {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 6px;
+            opacity: 0.6;
+        }
+
+        .mentoring-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 24px 28px;
+            margin-top: 24px;
+        }
+        .mentoring-section h2 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .mentoring-section h2 .badge {
+            background: rgba(232,69,107,0.15);
+            color: var(--accent);
+            font-size: 0.65rem;
+            padding: 2px 10px;
+            border-radius: 999px;
+            font-weight: 500;
+        }
+
+        .user-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .user-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 14px;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-subtle);
+            transition: all 0.15s;
+        }
+        .user-item:hover {
+            border-color: rgba(255,255,255,0.1);
+        }
+        .user-item .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+            min-width: 0;
+        }
+        .user-item .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--bg-tertiary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            flex-shrink: 0;
+            border: 1px solid var(--border-medium);
+        }
+        .user-item .user-details {
+            min-width: 0;
+        }
+        .user-item .user-details .ip {
+            font-weight: 500;
+            font-size: 0.85rem;
+            word-break: break-all;
+        }
+        .user-item .user-details .meta {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+        .user-item .user-stats {
+            text-align: right;
+            flex-shrink: 0;
+            margin-left: 12px;
+        }
+        .user-item .user-stats .count {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+        .user-item .user-stats .time {
+            font-size: 0.6rem;
+            color: var(--text-muted);
+        }
+        .user-item .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .user-item .status-dot.active {
+            background: #2ecc71;
+            box-shadow: 0 0 12px rgba(46,204,113,0.4);
+        }
+        .user-item .status-dot.inactive {
+            background: #666;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+        }
+        .empty-state .icon {
+            font-size: 3rem;
+            margin-bottom: 12px;
+        }
+        .empty-state p {
+            font-size: 0.95rem;
+        }
+
+        .live-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(46,204,113,0.12);
+            padding: 4px 12px;
+            border-radius: 999px;
+            font-size: 0.7rem;
+            color: #2ecc71;
+            font-weight: 500;
+        }
+        .live-indicator .pulse {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #2ecc71;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.8); }
+        }
+
+        .refresh-btn {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid var(--border-medium);
+            color: var(--text-secondary);
+            padding: 6px 16px;
+            border-radius: 999px;
+            cursor: pointer;
+            font-family: var(--font-family);
+            font-size: 0.8rem;
+            transition: all 0.15s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .refresh-btn:hover {
+            background: rgba(255,255,255,0.1);
+            color: var(--text-primary);
+        }
+        .refresh-btn:active { transform: scale(0.96); }
+
+        .footer-note {
+            margin-top: 3rem;
+            font-size: 0.75rem;
+            color: #3a3a4a;
+            text-align: center;
+            border-top: 1px solid var(--border-subtle);
+            padding-top: 1.5rem;
+        }
+
+        .user-count-badge {
+            background: rgba(232,69,107,0.12);
+            color: var(--accent);
+            font-size: 0.6rem;
+            padding: 2px 10px;
+            border-radius: 999px;
+            font-weight: 500;
+            margin-left: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .nav { padding: 0 12px; gap: 6px; }
+            .nav__logo { font-size: 1rem; gap: 5px; }
+            .nav__logo-icon { width: 28px; height: 28px; }
+            .nav__logo-icon img { width: 28px; height: 28px; object-fit: contain; }
+            .nav__links { display: none; }
+            .nav__hamburger { display: flex; }
+            .nav__free-text { display: none; }
+            .mobile-sidebar { width: 260px; }
+
+            .main { padding: 16px 12px 40px; }
+            .mentoring-header h1 { font-size: 1.8rem; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .stat-card { padding: 16px 12px; }
+            .stat-card .number { font-size: 1.8rem; }
+            .mentoring-section { padding: 16px 16px; }
+            .mentoring-section h2 { font-size: 1.1rem; }
+            .user-item { flex-wrap: wrap; gap: 6px; }
+            .user-item .user-stats { margin-left: 44px; text-align: left; width: 100%; }
+        }
+        @media (max-width: 480px) {
+            .stats-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+            .stat-card .number { font-size: 1.5rem; }
+            .user-item .user-details .ip { font-size: 0.75rem; }
+            .mentoring-header h1 { font-size: 1.4rem; }
+            .mentoring-header p { font-size: 0.85rem; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav" id="navbar">
+        <a href="/" class="nav__logo">
+            <span class="nav__logo-icon">
+                <img src="sitelogo.jpg" alt="Pirate Time logo" onerror="this.style.display='none';this.parentElement.innerHTML='<span style=\\'font-size:24px;line-height:1;\\'>🍿</span>'">
+            </span>
+            <span>Pirate Time</span>
+        </a>
+        <ul class="nav__links">
+            <li><a href="/" class="nav__link">Home</a></li>
+            <li><a href="/movies" class="nav__link">Movies</a></li>
+            <li><a href="/tvshows" class="nav__link">TV Shows</a></li>
+            <li><a href="/about" class="nav__link">About</a></li>
+            <li><a href="/contact" class="nav__link">Contact</a></li>
+            <li><a href="/mentoring" class="nav__link active">Mentoring</a></li>
+        </ul>
+        <div class="nav__actions">
+            <span class="nav__free-text">Free forever ♾</span>
+            <button class="nav__hamburger" id="hamburgerBtn" aria-label="Menu">☰</button>
+        </div>
+    </nav>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <div class="mobile-sidebar" id="mobileSidebar">
+        <div class="mobile-sidebar__drag-handle" id="dragHandle">
+            <div class="mobile-sidebar__drag-line"></div>
+        </div>
+        <button class="mobile-sidebar__close" id="sidebarClose">✕</button>
+        <a href="/" class="mobile-sidebar__link">Home</a>
+        <a href="/movies" class="mobile-sidebar__link">Movies</a>
+        <a href="/tvshows" class="mobile-sidebar__link">TV Shows</a>
+        <div class="mobile-sidebar__divider"></div>
+        <a href="/about" class="mobile-sidebar__link">About</a>
+        <a href="/contact" class="mobile-sidebar__link">Contact</a>
+        <a href="/mentoring" class="mobile-sidebar__link active">Mentoring</a>
+        <div class="mobile-sidebar__free">Free forever ♾</div>
+    </div>
+
+    <main class="main">
+        <div class="mentoring-header">
+            <h1>🎓 Mentoring Hub</h1>
+            <p>Real-time analytics & community insights</p>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid" id="statsGrid">
+            <div class="stat-card">
+                <div class="number accent" id="activeUsers">0</div>
+                <div class="label">👥 Active Now</div>
+                <div class="sub">Last 5 minutes</div>
+            </div>
+            <div class="stat-card">
+                <div class="number gold" id="totalVisits">0</div>
+                <div class="label">📊 Total Visits</div>
+                <div class="sub">All time</div>
+            </div>
+            <div class="stat-card">
+                <div class="number green" id="uniqueUsers">0</div>
+                <div class="label">👤 Unique Users</div>
+                <div class="sub">Ever visited</div>
+            </div>
+            <div class="stat-card">
+                <div class="number" id="lastUpdated">—</div>
+                <div class="label">🔄 Last Updated</div>
+                <div class="sub">Auto-refreshes every 10s</div>
+            </div>
+        </div>
+
+        <!-- Active Users -->
+        <div class="mentoring-section">
+            <h2>
+                🟢 Active Users
+                <span class="badge" id="activeBadge">0 online</span>
+                <span style="margin-left:auto;">
+                    <span class="live-indicator">
+                        <span class="pulse"></span> LIVE
+                    </span>
+                </span>
+            </h2>
+            <div id="activeUsersList">
+                <div class="empty-state">
+                    <div class="icon">👀</div>
+                    <p>No active users at the moment.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- All Unique Users -->
+        <div class="mentoring-section">
+            <h2>
+                👤 All Users
+                <span class="badge" id="totalBadge">0 total</span>
+                <span style="margin-left:auto;">
+                    <button class="refresh-btn" id="refreshBtn">⟳ Refresh</button>
+                </span>
+            </h2>
+            <div id="allUsersList">
+                <div class="empty-state">
+                    <div class="icon">📭</div>
+                    <p>No users have visited yet.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-note">© 2026 Pirate Time · Free forever ♾</div>
+    </main>
+
+    <script>
+        (function() {
+            // ===== MOBILE SIDEBAR =====
+            const hamburgerBtn = document.getElementById('hamburgerBtn');
+            const mobileSidebar = document.getElementById('mobileSidebar');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
+            const sidebarClose = document.getElementById('sidebarClose');
+            const dragHandle = document.getElementById('dragHandle');
+            let sidebarOpen = false;
+            let startX = 0, currentX = 0, isDragging = false;
+
+            function openSidebar() {
+                sidebarOpen = true;
+                mobileSidebar.classList.add('open');
+                sidebarOverlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+            function closeSidebar() {
+                sidebarOpen = false;
+                mobileSidebar.classList.remove('open');
+                sidebarOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+            hamburgerBtn.addEventListener('click', openSidebar);
+            sidebarClose.addEventListener('click', closeSidebar);
+            sidebarOverlay.addEventListener('click', closeSidebar);
+            dragHandle.addEventListener('touchstart', (e) => { startX = e.touches[0].clientX; isDragging = true; }, { passive: true });
+            document.addEventListener('touchmove', (e) => {
+                if (!isDragging || !sidebarOpen) return;
+                currentX = e.touches[0].clientX;
+                const diff = startX - currentX;
+                if (diff > 0) mobileSidebar.style.transform = `translateX(${diff}px)`;
+            }, { passive: true });
+            document.addEventListener('touchend', () => {
+                if (!isDragging) return;
+                isDragging = false;
+                const diff = startX - currentX;
+                if (diff > 80) closeSidebar();
+                else mobileSidebar.style.transform = '';
+                startX = 0; currentX = 0;
+            }, { passive: true });
+
+            // ===== ANALYTICS =====
+            const refreshBtn = document.getElementById('refreshBtn');
+            let analyticsData = null;
+
+            function formatTime(iso) {
+                if (!iso) return '—';
+                try {
+                    const d = new Date(iso);
+                    return d.toLocaleTimeString() + ' ' + d.toLocaleDateString();
+                } catch { return iso; }
+            }
+
+            function getInitials(ip) {
+                if (!ip) return '?';
+                const parts = ip.split('.');
+                if (parts.length === 4) {
+                    return parts[0] + '.' + parts[1];
+                }
+                return ip.substring(0, 4);
+            }
+
+            function isUserActive(lastVisit) {
+                if (!lastVisit) return false;
+                try {
+                    const last = new Date(lastVisit).getTime();
+                    const now = Date.now();
+                    return (now - last) < 300000; // 5 minutes
+                } catch {
+                    return false;
+                }
+            }
+
+            function renderAnalytics(data) {
+                analyticsData = data;
+                
+                // Stats
+                document.getElementById('activeUsers').textContent = data.active_users_count || 0;
+                document.getElementById('totalVisits').textContent = data.total_visits || 0;
+                document.getElementById('uniqueUsers').textContent = data.unique_users_count || 0;
+                document.getElementById('lastUpdated').textContent = formatTime(data.last_updated);
+                document.getElementById('activeBadge').textContent = data.active_users_count + ' online';
+                document.getElementById('totalBadge').textContent = data.unique_users_count + ' total';
+
+                // Active Users
+                const activeContainer = document.getElementById('activeUsersList');
+                const activeUsers = data.active_users || [];
+                if (activeUsers.length === 0) {
+                    activeContainer.innerHTML = `
+                        <div class="empty-state">
+                            <div class="icon">👀</div>
+                            <p>No active users at the moment.</p>
+                        </div>
+                    `;
+                } else {
+                    activeContainer.innerHTML = `
+                        <div class="user-list">
+                            ${activeUsers.map((u) => `
+                                <div class="user-item">
+                                    <div class="user-info">
+                                        <div class="user-avatar">${getInitials(u.ip)}</div>
+                                        <div class="user-details">
+                                            <div class="ip">${u.ip || 'Unknown'}</div>
+                                            <div class="meta">${u.user_agent ? u.user_agent.substring(0, 50) + (u.user_agent.length > 50 ? '...' : '') : 'Unknown device'}</div>
+                                        </div>
+                                    </div>
+                                    <div class="user-stats">
+                                        <span class="status-dot active"></span>
+                                        <div class="count">Active now</div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                }
+
+                // All Users - Filter to show only users not currently active
+                const allContainer = document.getElementById('allUsersList');
+                const uniqueUsers = data.unique_users || [];
+                
+                // Separate active and inactive users
+                const activeIps = new Set((data.active_users || []).map(u => u.ip));
+                const inactiveUsers = uniqueUsers.filter(u => !activeIps.has(u.ip));
+                
+                if (inactiveUsers.length === 0 && activeUsers.length === 0) {
+                    allContainer.innerHTML = `
+                        <div class="empty-state">
+                            <div class="icon">📭</div>
+                            <p>No users have visited yet.</p>
+                        </div>
+                    `;
+                } else if (inactiveUsers.length === 0) {
+                    allContainer.innerHTML = `
+                        <div class="empty-state">
+                            <div class="icon">✅</div>
+                            <p>All users are currently active! (${activeUsers.length} online)</p>
+                        </div>
+                    `;
+                } else {
+                    allContainer.innerHTML = `
+                        <div class="user-list">
+                            ${inactiveUsers.slice().reverse().map((u) => `
+                                <div class="user-item">
+                                    <div class="user-info">
+                                        <div class="user-avatar">${getInitials(u.ip)}</div>
+                                        <div class="user-details">
+                                            <div class="ip">${u.ip || 'Unknown'}</div>
+                                            <div class="meta">
+                                                ${u.visit_count || 1} visit${(u.visit_count || 1) > 1 ? 's' : ''}
+                                                ${u.first_visit ? '· First: ' + formatTime(u.first_visit) : ''}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="user-stats">
+                                        <span class="status-dot inactive"></span>
+                                        <div class="count">⚫ Offline</div>
+                                        <div class="time">${formatTime(u.last_visit)}</div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                }
+            }
+
+            async function fetchAnalytics() {
+                try {
+                    const res = await fetch('/api/analytics');
+                    const data = await res.json();
+                    renderAnalytics(data);
+                } catch (err) {
+                    console.error('Failed to fetch analytics:', err);
+                }
+            }
+
+            // Auto-refresh every 10 seconds
+            fetchAnalytics();
+            const interval = setInterval(fetchAnalytics, 10000);
+
+            refreshBtn.addEventListener('click', () => {
+                refreshBtn.textContent = '⟳ Refreshing...';
+                refreshBtn.style.opacity = '0.6';
+                fetchAnalytics().then(() => {
+                    refreshBtn.textContent = '⟳ Refresh';
+                    refreshBtn.style.opacity = '1';
+                });
+            });
+
+            // Cleanup on page unload
+            window.addEventListener('beforeunload', () => {
+                clearInterval(interval);
+            });
+        })();
+    </script>
+</body>
+</html>
